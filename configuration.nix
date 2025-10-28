@@ -50,8 +50,10 @@
       layout = "us";
       variant = "";
     };
-    # Inverse trackpad scrolling
-    libinput.naturalScrolling = true;
+  };
+  services.libinput.touchpad = {
+    # Default
+    naturalScrolling = false;
   };
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
@@ -66,6 +68,8 @@
     isNormalUser = true;
     extraGroups = [ "wheel" "networkManager" ];
     packages = with pkgs; [
+      monero-cli
+      qbittorrent
     ];
   };
 
@@ -87,8 +91,8 @@
   # Must be in home-manager
   programs.git = {
     enable = true;
-    userName = "Aled Lorans";
-    userEmail = "143277280+alorans@users.noreply.github.com";
+  #   userName = "Aled Lorans";
+  #   userEmail = "143277280+alorans@users.noreply.github.com";
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
