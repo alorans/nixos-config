@@ -2,9 +2,21 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, nixpkgs-unstable, ... }:
 
 {
+  # Add pkgs overlay for unstable
+  # Remember to periodically do nix flake update!
+  nixpkgs.overlays = [
+    (final: prev: {
+      unstable = import nixpkgs-unstable {
+        system = final.system;
+        config.allowUnfree = true;
+      };
+    })
+  ];
+
+
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -110,6 +122,7 @@
     acpi
     vlc
     ffmpeg
+    unstable.zed-editor
   ] ++ (with pkgs.kdePackages; [
     kcalc
     kcharselect

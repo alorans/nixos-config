@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-25.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # home-manager.url = "github:nix-community/home-manager";
 
     # home-manager nixpkgs follows main nixpkgs
@@ -10,12 +11,9 @@
     # home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, ... }@inputs:
-  let
-    # pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
-  in
-  {
+  outputs = { self, nixpkgs, nixpkgs-unstable, ... }@inputs: {
     nixosConfigurations.memex = inputs.nixpkgs.lib.nixosSystem {
+      specialArgs = { inherit nixpkgs-unstable; }; # pass unstable to configuration.nix
       modules = [
         ./configuration.nix
       ];
