@@ -123,6 +123,7 @@
     vlc
     ffmpeg
     unstable.zed-editor
+    unstable.yt-dlp
   ] ++ (with pkgs.kdePackages; [
     kcalc
     kcharselect
