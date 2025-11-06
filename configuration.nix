@@ -147,15 +147,15 @@
 
   # List services that you want to enable:
 
-  # Enable the OpenSSH daemon.
+  # Disable OpenSSH daemon until we have a stronger password.
   services.openssh = {
-    enable = true;
+    enable = false;
     settings = {
       PasswordAuthentication = true;
       PermitRootLogin = "no";
     };
   };
-  networking.firewall.allowedTCPPorts = [ 22 ];
+  # networking.firewall.allowedTCPPorts = [ 22 ];
 
   # This option defines the first version of NixOS you have installed on this particular machine,
   # and is used to maintain compatibility with application data (e.g. databases) created on older NixOS versions.
