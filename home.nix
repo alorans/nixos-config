@@ -16,7 +16,7 @@
   programs.home-manager.enable = true;
 
   home.packages = with pkgs; [
-    # dev / CLI tools
+    # cli
     zellij
     nh
     gh
@@ -26,10 +26,11 @@
     unstable.yt-dlp
     clang-tools
     kdiff3
-
-    # GUI apps
-    vlc
     ffmpeg
+    cloc
+
+    # gui
+    vlc
     monero-cli
     qbittorrent
     rsibreak

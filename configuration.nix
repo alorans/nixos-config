@@ -2,88 +2,30 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, nixpkgs-unstable, nix-vscode-extensions, ... }:
+{ config, lib, pkgs, ... }:
 
 {
-  # Add pkgs overlay for unstable
-  # Remember to periodically do nix flake update!
-  nixpkgs.overlays = [
-    # this adds pkgs.unstable
-    (final: prev: {
-      unstable = import nixpkgs-unstable {
-        system = final.stdenv.hostPlatform.system;
-        config.allowUnfree = true;
-      };
-    })
+  # turn on flakes
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-    # vscode extensions
-    nix-vscode-extensions.overlays.default
-
-    # make the ui of ghidra bigger than default, not for everyone
-    # also it forces ghidra to be compiled from source which takes a minute
-    (final: prev: {
-      ghidra = prev.ghidra.overrideAttrs (old: {
-        # this might be useless unless it's 2
-        postInstall = (old.postInstall or "") + ''
-          substituteInPlace $out/lib/ghidra/support/launch.properties \
-            --replace-fail \
-            "VMARGS_LINUX=-Dsun.java2d.uiScale=1" \
-            "VMARGS_LINUX=-Dsun.java2d.uiScale=2"
-        '';
-      });
-    })
-    
-    # improved rsibreak
-    (final: prev: {
-      rsibreak = prev.rsibreak.overrideAttrs (old: {
-        version = "unstable-2026-07-04";
-
-        # src = final.fetchFromGitHub {} # maybe eventually
-        src = ./packages/rsibreak;
-
-        # wayland build inputs
-        nativeBuildInputs = (old.nativeBuildInputs or []) ++ [
-          final.pkg-config
-          final.wayland-scanner
-        ];
-        buildInputs = (old.buildInputs or []) ++ [
-          final.wayland
-          final.wayland-protocols
-        ];
-
-        # load in xwayland
-        postFixup = (old.postFixup or "") + ''
-          wrapProgram $out/bin/rsibreak --set QT_QPA_PLATFORM xcb
-        '';
-      });
-    })
-  ];
-
-
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  # Include the results of the hardware scan.
+  imports = [ ./hardware-configuration.nix ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "nixos"; # Define your hostname.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.hostName = "nixos";
+  networking.networkmanager.enable = true;
 
-  # Set your time zone.
-  # time.timeZone = "America/Phoenix";
   time.timeZone = "Pacific/Auckland";
 
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   console = {
     font = "Lat2-Terminus16";
     keyMap = "us";
   };
 
-  # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # Enable CUPS to print documents.
@@ -96,7 +38,7 @@
     jack.enable = true;
   };
 
-  # Enable touchpad support (enabled default in most desktopManager).
+  # Enable touchpad support
   services.libinput.enable = true;
 
   # Enable KDE Plasma
@@ -122,7 +64,6 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  # Per-user packages now live in home.nix (managed by home-manager).
   users.users.alorans = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkManager" ];
@@ -171,6 +112,7 @@
     };
   };
 
+  # Steam needs to be installed globally
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -190,15 +132,15 @@
     ncurses
   ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
   environment.systemPackages = with pkgs; [
     vim
     tmux
     tree
+    # control screen brightness from TTY
     brightnessctl
+    # check battery from TTY
     acpi
   ] ++ (with pkgs.kdePackages; [
     sddm-kcm

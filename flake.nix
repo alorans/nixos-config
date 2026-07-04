@@ -1,14 +1,11 @@
 {
-  description = "baby's first nix flake";
+  description = "NixOS System Flake";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-26.05";
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
 
-    # home-manager nixpkgs follows main nixpkgs
-    # this can slightly affect reproducibility, but it can dramatically reduce download sizes
-    # make home manager have same version as nixpkgs its following
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -16,7 +13,6 @@
 
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
-      # inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
     };
   };
@@ -30,31 +26,80 @@
       home-manager,
       plasma-manager,
       ...
-    }: {
-    nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
-      specialArgs = { inherit nixpkgs-unstable nix-vscode-extensions; }; # pass unstable to configuration.nix
-      modules = [
-        ./configuration.nix
-        home-manager.nixosModules.home-manager
-        {
-          # reuse system pkgs
-          # this means that overlays and such are ignored in home.nix and must be applied in configuration.nix
-          # uh i got this error:
-          # evaluation warning: alorans profile: You have set either `nixpkgs.config` or `nixpkgs.overlays` while using `home-manager.useGlobalPkgs`.
-          #                     This will soon not be possible. Please remove all `nixpkgs` options when using `home-manager.useGlobalPkgs`
-          home-manager.useGlobalPkgs = true;
-          # install home.packages via /etc/profiles instead of ~/.nix-profile
-          home-manager.useUserPackages = true;
+    }:
+    let
+      # the goal here is to wrap all of these inputs into one pkgs argument
+      overlays = [
+        # pkgs.unstable
+        (final: prev: {
+          unstable = import nixpkgs-unstable {
+            system = final.stdenv.hostPlatform.system;
+            config.allowUnfree = true;
+          };
+        })
 
-          # TODO: is there a more univorm way to do this with plasma-manager and all?
-          home-manager.sharedModules = [ plasma-manager.homeModules.plasma-manager ];
-          home-manager.users.alorans = import ./home.nix;
-          home-manager.backupFileExtension = "hm-bak"; # uncomment if home-manager complains about existing dotfiles
-          # you may need to add the setting that allows it to clobber old backup files
-          # actually I think this is on a per-file basis
-          # so like home.file.".config/example.txt".force = true;
-        }
+        # vscode extensions
+        nix-vscode-extensions.overlays.default
+
+        # make the ui of ghidra bigger than default, not for everyone
+        # also it forces ghidra to be compiled from source which takes a minute
+        (final: prev: {
+          ghidra = prev.ghidra.overrideAttrs (old: {
+            # this may not support non-integer values
+            postInstall = (old.postInstall or "") + ''
+              substituteInPlace $out/lib/ghidra/support/launch.properties \
+                --replace-fail \
+                "VMARGS_LINUX=-Dsun.java2d.uiScale=1" \
+                "VMARGS_LINUX=-Dsun.java2d.uiScale=2"
+            '';
+          });
+        })
+        
+        # improved rsibreak
+        (final: prev: {
+          rsibreak = prev.rsibreak.overrideAttrs (old: {
+            version = "unstable-0.13.0";
+
+            src = final.fetchFromGitHub {
+              owner = "alorans";
+              repo = "rsibreak";
+              rev = "133bbb3414b38b6786367408856c7e9f15151392"; # copy the most recent commit hash
+              hash = "sha256-xOH0C2jZ5HpVK+8jlk9zkgwvduCiOlUEtQuVwAKAZIM="; # nix will tell you what to put if you leave it blank
+            };
+
+            # wayland build inputs
+            nativeBuildInputs = (old.nativeBuildInputs or []) ++ [
+              final.pkg-config
+              final.wayland-scanner
+            ];
+            buildInputs = (old.buildInputs or []) ++ [
+              final.wayland
+              final.wayland-protocols
+            ];
+
+            # load in xwayland
+            postFixup = (old.postFixup or "") + ''
+              wrapProgram $out/bin/rsibreak --set QT_QPA_PLATFORM xcb
+            '';
+          });
+        })
       ];
+    in
+    {
+      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+        specialArgs = { inherit nixpkgs-unstable nix-vscode-extensions; };
+        modules = [
+          ./configuration.nix
+          { nixpkgs.overlays = overlays; }
+          home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.sharedModules = [ plasma-manager.homeModules.plasma-manager ];
+            home-manager.users.alorans = import ./home.nix;
+            home-manager.backupFileExtension = "hm-bak";
+          }
+        ];
+      };
     };
-  };
 }

@@ -1,4 +1,0 @@
-include(ECMInstallIcons)
-ecm_install_icons( ICONS 128-apps-rsibreak.png 16-actions-rsibreak2.png 16-actions-rsibreakx.png 22-actions-rsibreak1.png 22-actions-rsibreak4.png 32-actions-duringbreaks.png 32-actions-rsibreak2.png 32-actions-rsibreakx.png 48-actions-rsibreak0.png 48-actions-rsibreak3.png 16-actions-rsibreak0.png 16-actions-rsibreak3.png 16-apps-rsibreak.png 22-actions-rsibreak2.png 22-actions-rsibreakx.png 32-actions-rsibreak0.png 32-actions-rsibreak3.png 32-actions-timings.png 48-actions-rsibreak1.png 48-actions-rsibreak4.png 16-actions-rsibreak1.png 16-actions-rsibreak4.png 22-actions-rsibreak0.png 22-actions-rsibreak3.png 22-apps-rsibreak.png 32-actions-rsibreak1.png 32-actions-rsibreak4.png 32-apps-rsibreak.png 48-actions-rsibreak2.png 48-actions-rsibreakx.png DESTINATION ${KDE_INSTALL_ICONDIR} THEME hicolor )
-
-
