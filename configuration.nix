@@ -2,17 +2,60 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, nixpkgs-unstable, ... }:
+{ config, lib, pkgs, nixpkgs-unstable, nix-vscode-extensions, ... }:
 
 {
   # Add pkgs overlay for unstable
   # Remember to periodically do nix flake update!
   nixpkgs.overlays = [
+    # this adds pkgs.unstable
     (final: prev: {
       unstable = import nixpkgs-unstable {
-        system = final.system;
+        system = final.stdenv.hostPlatform.system;
         config.allowUnfree = true;
       };
+    })
+
+    # vscode extensions
+    nix-vscode-extensions.overlays.default
+
+    # make the ui of ghidra bigger than default, not for everyone
+    # also it forces ghidra to be compiled from source which takes a minute
+    (final: prev: {
+      ghidra = prev.ghidra.overrideAttrs (old: {
+        # this might be useless unless it's 2
+        postInstall = (old.postInstall or "") + ''
+          substituteInPlace $out/lib/ghidra/support/launch.properties \
+            --replace-fail \
+            "VMARGS_LINUX=-Dsun.java2d.uiScale=1" \
+            "VMARGS_LINUX=-Dsun.java2d.uiScale=2"
+        '';
+      });
+    })
+    
+    # improved rsibreak
+    (final: prev: {
+      rsibreak = prev.rsibreak.overrideAttrs (old: {
+        version = "unstable-2026-07-04";
+
+        # src = final.fetchFromGitHub {} # maybe eventually
+        src = ./packages/rsibreak;
+
+        # wayland build inputs
+        nativeBuildInputs = (old.nativeBuildInputs or []) ++ [
+          final.pkg-config
+          final.wayland-scanner
+        ];
+        buildInputs = (old.buildInputs or []) ++ [
+          final.wayland
+          final.wayland-protocols
+        ];
+
+        # load in xwayland
+        postFixup = (old.postFixup or "") + ''
+          wrapProgram $out/bin/rsibreak --set QT_QPA_PLATFORM xcb
+        '';
+      });
     })
   ];
 
@@ -26,11 +69,12 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.hostName = "memex"; # Define your hostname.
+  networking.hostName = "nixos"; # Define your hostname.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
   # Set your time zone.
-  time.timeZone = "America/Phoenix";
+  # time.timeZone = "America/Phoenix";
+  time.timeZone = "Pacific/Auckland";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -70,42 +114,81 @@
   services.displayManager.sddm.enable = true;
   services.displayManager.sddm.wayland.enable = true;
   services.desktopManager.plasma6.enable = true;
+
+  # mullvad (eventually replace with i2p)
   services.mullvad-vpn = {
     enable = true;
     package = pkgs.mullvad-vpn;
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
+  # Per-user packages now live in home.nix (managed by home-manager).
   users.users.alorans = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkManager" ];
-    packages = with pkgs; [
-      monero-cli
-      qbittorrent
-    ];
   };
 
-  programs.firefox.enable = true;
+  # although this could be configured via profiles in home-manager,
+  # this will install extensions and config on all profiles
+  programs.firefox = {
+    enable = true;
+
+    policies = {
+      OfferToSaveLogins = false;
+
+      # Extensions
+      ExtensionSettings = let
+        moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
+      in {
+        # "*".installation_mode = "blocked";
+        # turn on if you want to block the installation of extra extensions
+
+        "uBlock0@raymondhill.net" = {
+          install_url       = moz "ublock-origin";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # KDE Plasma integration
+        "plasma-browser-integration@kde.org" = {
+          install_url       = moz "plasma-integration";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        "{73a6fe31-595d-460b-a920-fcc0f8843232}" = {
+          install_url       = moz "noscript";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+      };
+    };
+
+    # KDE Plasma integration
+    nativeMessagingHosts.packages = [ pkgs.kdePackages.plasma-browser-integration ];
+    preferences = {
+      "widget.use-xdg-desktop-portal.file-picker" = 1;
+    };
+  };
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
     dedicatedServer.openFirewall = true;
     localNetworkGameTransfers.openFirewall = true;
   };
-  programs.obs-studio = {
-    enable = true;
-    plugins = with pkgs.obs-studio-plugins; [
-      wlrobs
-      obs-pipewire-audio-capture
-      obs-vaapi
-    ];
-  };
-  # Must be in home-manager
-  programs.git = {
-    enable = true;
-  #   userName = "Aled Lorans";
-  #   userEmail = "143277280+alorans@users.noreply.github.com";
-  };
+
+  # magical shim that lets dynamically linked elfs run on nixos
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    # Add commonly needed libraries for unpatched binaries here
+    # you can use ldd to get the needed libraries (or readelf if you can't risk the elf running)
+    stdenv.cc.cc
+    zlib
+    glib
+    libX11
+    ncurses
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
@@ -114,26 +197,13 @@
   environment.systemPackages = with pkgs; [
     vim
     tmux
-    zellij
-    nh
-    gh
     tree
     brightnessctl
     acpi
-    vlc
-    ffmpeg
-    unstable.zed-editor
-    unstable.yt-dlp
   ] ++ (with pkgs.kdePackages; [
-    kcalc
-    kcharselect
-    kclock
-    kcolorchooser
-    ksystemlog
     sddm-kcm
     partitionmanager
   ]) ++ [
-    kdiff3
     hardinfo2
     wayland-utils
     wl-clipboard
@@ -145,9 +215,6 @@
     enableSSHSupport = true;
   };
 
-  # List services that you want to enable:
-
-  # Disable OpenSSH daemon until we have a stronger password.
   services.openssh = {
     enable = false;
     settings = {
@@ -175,6 +242,4 @@
   #
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.05"; # Did you read the comment?
-
 }
-

@@ -54,7 +54,7 @@ gdisk /dev/nvme0n1
 > <Enter>
 > <Enter>  # use remaining space
 > 8200  # Linux swap
-> w  # write the partition table (careful: WIPES DISK!)
+> w  # write the partition table (WIPES DISK)
 > y
 ```
 - NOTE: swap is great, but it can wear down SSDs over time, so be mindful of that.

@@ -1,0 +1,198 @@
+<?xml version="1.0" ?>
+<!DOCTYPE book PUBLIC "-//KDE//DTD DocBook XML V4.5-Based Variant V1.1//EN" "dtd/kdedbx45.dtd" [
+  <!ENTITY % English "INCLUDE" > <!-- change language only here -->
+  <!ENTITY % addindex "IGNORE">
+]>
+
+<book lang="&language;">
+
+<bookinfo>
+<title>The &rsibreak; Handbook</title>
+
+<authorgroup>
+<author>
+<firstname>Tom</firstname>
+<surname>Albers</surname>
+<affiliation>
+<address><email>tomalbers@kde.nl</email></address>
+</affiliation>
+</author>
+
+<author>
+<firstname>Bram</firstname>
+<surname>Schoenmakers</surname>
+<affiliation>
+<address><email>bramschoenmakers@kde.nl</email></address>
+</affiliation>
+</author>
+
+<!-- TRANS:ROLES_OF_TRANSLATORS -->
+</authorgroup>
+
+<copyright>
+<year>2006</year>
+<holder>Tom Albers</holder>
+</copyright>
+
+<copyright>
+<year>2006</year>
+<holder>Bram Schoenmakers</holder>
+</copyright>
+
+<legalnotice>&FDLNotice;</legalnotice>
+
+<date>2022-03-20</date>
+<releaseinfo>0.12.14</releaseinfo>
+
+<abstract><para>Repetitive Strain Injury is an illness which can occur as a
+result of continuous work with a mouse and keyboard. The risk of suffering injury increases the longer users work without breaks. &rsibreak; simply offers reminders to take a break now and then. </para></abstract>
+
+<keywordset>
+<keyword>KDE</keyword>
+<keyword>rsibreak</keyword>
+<keyword>RSI</keyword>
+<keyword>project</keyword>
+</keywordset>
+
+</bookinfo>
+
+<chapter id="introduction">
+<title>Introduction</title>
+
+<para>Repetitive Strain Injury can occur as a result of working with a mouse and keyboard. This utility can be used to remind you to
+take a break now and then. It displays a random picture from a collection at specified intervals for defined durations. You can configure the pictures to show and lengths of time to show them.
+You might use the breaks reminders to do some stretching exercises, for example, or as a
+reminder to walk away from the computer for a while.</para>
+
+<screenshot>
+<screeninfo>Logo &rsibreak;</screeninfo>
+<mediaobject>
+<imageobject>
+<imagedata fileref="logo.png" format="PNG"/>
+</imageobject>
+<textobject>
+<phrase>Logo &rsibreak;</phrase>
+</textobject>
+</mediaobject>
+</screenshot>
+
+<para>&rsibreak; was originally written by Tom Albers. Early in the development
+Bram Schoenmakers joined the project</para>
+
+</chapter>
+
+<chapter id="general-use">
+<title>Using &rsibreak;</title>
+
+<para>The idea of &rsibreak; is to interrupt you in your work. The intention is to do that in
+a user-friendly manner. There will be times, though, that it will display itself when you are very busy. The configuration options in &rsibreak; are an effort to allow you to customize the interruptions. In that way we hope you will be able to improve your effectiveness at work while lessening your chances of injury.</para>
+
+<para>After starting, you can see an icon in your tray and you will see a welcome
+pop up. Although the application should be useful with default settings, it may be wise
+to take control by examining the settings. To discover and to obtain an access to the options available, right click on the tray icon; in the context menu that appears, select <guilabel>Configure</guilabel>. The following chapters contain further configuration information.</para>
+
+<screenshot>
+<screeninfo>&rsibreak; statistics</screeninfo>
+<mediaobject>
+<imageobject>
+<imagedata fileref="statistics.png" format="PNG"/>
+</imageobject>
+<textobject>
+<phrase>Left click on the tray icon to see statistics</phrase>
+</textobject>
+</mediaobject>
+</screenshot>
+
+<para>When you left click on the tray icon you will see some statistics. If you
+configure &rsibreak; to break at fixed times your idle time will not be measured. In that case, some of the options in the statistics may not be very informative.</para>
+
+<para>The upper left block shows general statistics: some totals and some information about idle time. The bottom left block shows something about your work pace. You will see the total amount of activity since you started the current log-in session. The amount of activity during some other intervals will also be shown. The Pause Score decreases every time you skip a break. The blocks to the right report on which short and long breaks have already passed. At present, the labels in the dialog can either be black or red and green. In the latter case a red statistic indicates a recommendation to relax and take a break, which will bring the color closer to green.</para>
+
+<para>When you right-click the tray icon, the context menu will show an option to
+<guilabel>Suspend</guilabel> &rsibreak;. When you don't want to be interrupted, such as during a game or a presentation, you can use this to silence &rsibreak;
+You can resume &rsibreak; when you click right on the icon again
+and select <guilabel>Resume</guilabel>.</para>
+
+<screenshot>
+<screeninfo>Suspended &rsibreak;</screeninfo>
+<mediaobject>
+<imageobject>
+<imagedata fileref="suspend.png" format="PNG"/>
+</imageobject>
+<textobject>
+<phrase>The tray icon when &rsibreak; is suspended</phrase>
+</textobject>
+</mediaobject>
+</screenshot>
+
+<para>The last way to influence &rsibreak; is via &DBus;. There are &DBus;
+commands available to force breaks and to suspend and resume &rsibreak;. You can
+use these to suspend &rsibreak; automatically when you start a game or any other specified program.
+Execute <command>qdbus org.kde.rsibreak /rsibreak</command> to see the possibilities.</para>
+</chapter>
+
+<chapter id="break-types">
+<title>Break types</title>
+
+<para>Most settings are straightforward. On the general page, there is an option to start up automatically at &kde; startup.
+You might wonder why that is because the session manager should take care of
+that. Some users may need to start &rsibreak; at startup
+while they are not using the session manager. Note that <application>Gnome</application> will ignore the setting.</para>
+
+<para>There are two behavior options in &rsibreak;. There is an option to break at fixed intervals for fixed periods, and there is an option to reset
+the timers when &rsibreak; detects that you have been idle for the duration of a
+break.</para>
+
+<para>You can indicate that you do not want RSIBreak to interfere with presentations, games, video playback, and any other fullscreen 
+application on the current virtual desktop using the <guilabel>Suppress if fullscreen windows present</guilabel> option.
+</para>
+
+<screenshot>
+<screeninfo>&rsibreak; popup</screeninfo>
+<mediaobject>
+<imageobject>
+<imagedata fileref="popup.png" format="PNG"/>
+</imageobject>
+<textobject>
+<phrase>The lock button enables you to lock your screen whenever you leave your
+computer</phrase>
+</textobject>
+</mediaobject>
+</screenshot>
+
+<para>You may find the full-screen notice to take a break inconvenient at the time it appears. In this case, on the <guilabel>During Breaks</guilabel> page you can indicate that you want to use a popup; a small popup near the tray will appear asking you to take a break. If you choose to ignore that, the full-screen activity-block will appear anyway.</para>
+
+<para>There are three options for the full screen break. It can show a <guilabel>Complete Black Effect</guilabel> (this is the default action), <guilabel>Show Plasma Dashboard</guilabel> or <guilabel>Show Slide Show of Images</guilabel> where a path may be set up to specify a folder on your hard disk which contains images. During a break,
+you will see a slideshow of those images.</para>
+</chapter>
+
+<chapter id="timings">
+<title>Duration/Interval of a break</title>
+
+<!--
+<para>On the <guilabel>Timings</guilabel>-page of the settings, you can change the duration of a break and the intervals after which it recurs. There are settings available for two different breaks. For example: a break of 20 seconds every 20 minutes ("short break 1"); a longer break of 2 minutes every hour ("long break 2").</para>
+-->
+
+<para>&rsibreak; supports two different types of break: <quote>Tiny breaks</quote> and <quote>Big breaks</quote>. The usual way to use these is to take frequent tiny breaks, and occasional big breaks. For example, a break of 20 seconds every 20 minutes (the tiny break), and a longer break of 2 minutes every hour (the big break).</para>
+
+<tip><para>It is no use to set up intervals which are irritating. Those will, by definition, get on your nerves and you will be more likely to hit &Esc; &ndash; or any other key you have setup on the <guilabel>During Breaks</guilabel> page &ndash; to skip the break.</para>
+
+<para>If you find that you are often skipping breaks, you could decide to disable the shortcut
+and hide the minimize button. Remember, you choose how strictly to follow the break sequence. </para>
+    </tip>
+</chapter>
+
+<chapter id="credits-and-license">
+<title>Credits and License</title>
+
+<para>&rsibreak; copyright 2005-2015 Tom Albers, Bram Schoenmakers, Albert Astals Cid</para>
+<para>Documentation copyright 2006 Rob Moore, Tom Albers, Bram Schoenmakers</para>
+
+<!-- TRANS:CREDIT_FOR_TRANSLATORS -->
+&underGPL;
+&underFDL;
+</chapter>
+
+
+&documentation.index;
+</book>
