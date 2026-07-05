@@ -1,29 +1,61 @@
 # Nix Cheatsheet
 
-- Make sure flake.nix is added to any git repositories you are in!
+- Errors
+    - Always make sure your flake.nix and any paths it refers to are added to git.
+    - `error: syntax error, unexpected '=', expecting ';'` generally means you forgot the semicolon on the line before.
 
-- Flake devShell template
-```nix
-TODO
-```
-
-- NixOS rebuild commands
-    - `switch` = switch immediately
-    - `boot` = enter new system on reboot, good for kinda risky stuff
+- NixOS rebuild
+    - `switch` = build and switch to new system immediately
+    - `boot` = enter new system on reboot
     - `build-vm` = test big changes in a vm without touching the real system
     - `dry-build` = preview changes
 
 - Garbage collection
-    - TODO
-    - `nix-collect-garbage -d`
-    - `nix flake update` there is also a channels version of this
-    - also home manager needs this sometimes (does it need it if it is following system nixpkgs?)
-    - `nix-store --optimize` makes hard links
+    - `nix-collect-garbage -d` = delete all generations besides than the current one
+    - `nix-collect-garbage --delete-older-than` = delete all generations older than a given string (e.g. `30d`, `1h`). It is possible to automate running this periodically, but I prefer to do it manually.
+    - `nix-store --optimize` = make hard links to save space in the /nix/store
 
-- I would not recommend anyone use channels unless you have used NixOS before flakes and are used to that.
-- Never use `nix-env -i`.
-- `nix-shell -p` is OK. There might be a flakes version of this.
+- Classic Nix
+    - I would not recommend anyone use the classic NixOS-style configuration (i.e. with channels) unless they were using NixOS before flakes and are used to that.
+    - I personally *never* use `nix-env -i`, especially seeing as we have home-manager. There might be some valid uses for it, but I think declarative installation should be strongly preferred wherever possible.
+    - `nix-shell -p` is fine for temporarily testing a package. For anything tied to a specific project, it is generally better to use a classic or flake-based devShell.
+    - `sudo nix-channel --update && sudo nixos-rebuild switch --upgrade` to update channels.
 
-- *nix-direnv*
-    - This is great for quality of life.
+- Modern Nix (nix-command + flakes)
+    - `nix flake update` = update the dependencies in the flake.lock file
+    - `nix develop` = enter a flake.nix devShell in the same file (I usually automate this with `nix-direnv`)
+
+- `nix-direnv`
+    - This package is great for quality of life.
+    - Install it alongside `direnv` and it automatically loads a devShell upon entering its directory.
     - Do `echo "use flake" >> .envrc && direnv allow` in the directory.
+
+- Templates
+    - Flake devShell
+```nix
+{
+  description = "my devShell";
+
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+  };
+
+  outputs = { self, nixpkgs }:
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+    in
+    {
+      devShells.${system}.default = pkgs.mkShell {
+        # build-time dependencies
+        nativeBuildInputs = with pkgs; [];
+
+        # run-time dependencies
+        buildInputs = with pkgs; [];
+
+        # shell command (e.g. to export path variables)
+        shellHook = '''';
+      };
+    };
+}
+```
