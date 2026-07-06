@@ -101,10 +101,11 @@
         "window.autoDetectColorScheme" = true;
         "workbench.preferredDarkColorTheme" = "Default Dark";
         "workbench.preferredLightColorTheme" = "Default Light";
-        "zig.path" = "zig";
+        "zig.path" = "zig"; # use system zig
         "zig.zls.path" = "zls";
         "explorer.confirmDelete" = false;
         "explorer.confirmDragAndDrop" = false;
+        "vim.surround" = true;
       };
 
       extensions = with pkgs.open-vsx-release; [
@@ -120,6 +121,7 @@
         vscodevim.vim
         pucelle.run-on-save
         llvm-vs-code-extensions.vscode-clangd
+        ms-vscode.cmake-tools
       ];
     };
   };
