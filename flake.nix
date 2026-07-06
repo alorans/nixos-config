@@ -58,13 +58,13 @@
         # improved rsibreak
         (final: prev: {
           rsibreak = prev.rsibreak.overrideAttrs (old: {
-            version = "unstable-0.13.0";
+            version = "xwayland-0.13.0";
 
             src = final.fetchFromGitHub {
               owner = "alorans";
-              repo = "rsibreak";
-              rev = "133bbb3414b38b6786367408856c7e9f15151392"; # copy the most recent commit hash
-              hash = "sha256-xOH0C2jZ5HpVK+8jlk9zkgwvduCiOlUEtQuVwAKAZIM="; # nix will tell you what to put if you leave it blank
+              repo = "rsibreak_xwayland";
+              rev = "6200e975865f8e276848ec3e7596b422cdda748f"; # copy the most recent commit hash
+              hash = "sha256-yuVGrTlDd2YxXvsks8httNie5v/t6D0KZoCeC69gap8="; # nix will tell you what to put if you leave it blank
             };
 
             # wayland build inputs
@@ -89,8 +89,8 @@
       nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit nixpkgs-unstable nix-vscode-extensions; };
         modules = [
-          ./configuration.nix
           { nixpkgs.overlays = overlays; }
+          ./configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

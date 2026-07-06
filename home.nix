@@ -140,40 +140,45 @@
 
   # set rsibreak configuration
   # this is for 20-20-20 (every 20 minutes, look 20 feet away for 20 seconds)
-  # xdg.configFile."rsibreakrc".text = ''
-  #   [General]
-  #   AutoStart=false
+  xdg.configFile."rsibreakrc".text = ''
+    [General]
+    AutoStart=false
 
-  #   [General Settings]
-  #   BigDuration=1
-  #   BigEnabled=false
-  #   BigInterval=1
-  #   BigThreshold=10
-  #   TinyDuration=20
-  #   TinyEnabled=true
-  #   TinyInterval=20
-  #   TinyThreshold=40
-  #   DisableAccel=true
-  #   Effect=0
-  #   Graylevel=100
-  #   HideLockButton=true
-  #   HideMinimizeButton=true
-  #   HidePostponeButton=true
-  #   Patience=30
-  #   PostponeBreakDuration=5
-  #   SlideInterval=10
-  #   SuppressIfPresenting=false
-  #   UseNoIdleTimer=false
-  #   UsePlasmaReadOnly=true
+    [General Settings]
+    BigDuration=1
+    BigEnabled=false
+    BigInterval=60
+    BigThreshold=5
+    DisableAccel=false
+    Effect=0
+    ExpandImageToFullScreen=true
+    Graylevel=80
+    HideLockButton=true
+    HideMinimizeButton=true
+    HidePostponeButton=true
+    ImageFolder=${config.home.homeDirectory}
+    Patience=30
+    PostponeBreakDuration=5
+    SearchRecursiveCheck=false
+    ShowSmallImagesCheck=true
+    SlideInterval=10
+    SuppressIfPresenting=true
+    TinyDuration=20
+    TinyEnabled=true
+    TinyInterval=20
+    TinyThreshold=120
+    UseNoIdleTimer=false
+    UsePlasmaReadOnly=true
 
-  #   [Notification Messages]
-  #   dont_show_welcome_again_for_001=false
+    [Notification Messages]
+    dont_show_welcome_again_for_001=false
 
-  #   [Popup Settings]
-  #   UseFlash=true
-  #   UsePopup=false
-  # '';
-
+    [Popup Settings]
+    UseFlash=false
+    UsePopup=false
+  '';
+  
+  # handle rsibreak autostart
   xdg.configFile."autostart/rsibreak.desktop".text = ''
     [Desktop Entry]
     Type=Application
@@ -186,7 +191,6 @@
     enable = true;
 
     workspace = {
-      # Solid black wallpaper R,G,B(,A)
       wallpaperPlainColor = "0,0,0";
     };
 

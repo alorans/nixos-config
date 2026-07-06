@@ -9,6 +9,7 @@ systemd-inhibit --what=handle-lid-switch sleep infinity
 ```
 
 - KDE
+    - Use `Alt` + `Space` to open KRunner.
     - How I generally organize my desktops
         1. VSCodium (+ terminal windows)
         2. Firefox
