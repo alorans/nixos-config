@@ -29,3 +29,10 @@ systemd-inhibit --what=handle-lid-switch sleep infinity
     - `Ctrl` + `C` = regular apps, e.g. browser.
     - `Ctrl` + `Shift` + `C` = terminals
     - `"+y` = vim
+
+- Git
+    - `git merge`: You generally want to rebase because it makes the commit history much easier to follow.
+    - `git rm --cached`: This removes a file from the git cache. For example, so new .gitignore rules can take effect.
+    - `git commit --amend`: Amend the previous commit.
+    - `git log`: List commit hashes and messages.
+    - `git blame`: See the commits at which different lines of a file were touched. This is sometimes automatically integrated into code editors.
