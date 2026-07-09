@@ -19,7 +19,6 @@
     # cli
     zellij
     nh
-    gh
     python3
     unstable.zig
     unstable.zls
@@ -59,8 +58,16 @@
 
   programs.git = {
     enable = true;
-    settings.user.name = "Aled Lorans";
-    settings.user.email = "143277280+alorans@users.noreply.github.com";
+    # settings.user.name = "Aled Lorans";
+    # settings.user.email = "143277280+alorans@users.noreply.github.com";
+  };
+
+  # github integration
+  programs.gh = {
+    enable = true;
+    gitCredentialHelper = {
+      enable = true;
+    };
   };
 
   # install direnv + nix-direnv
@@ -106,7 +113,26 @@
         "explorer.confirmDelete" = false;
         "explorer.confirmDragAndDrop" = false;
         "vim.surround" = true;
+        "vim.leader" = "<space>";
+        "vim.normalModeKeyBindingsNonRecursive" = [
+          {
+            before = [ "<leader>" "r" ];
+            commands = [ "editor.action.rename" ];
+          }
+          {
+            before = [ "<leader>" "g" ];
+            commands = [ "editor.action.revealDefinition" ];
+          }
+        ];
       };
+      keybindings = [
+        {
+          # turn off vim with a keybinding
+          "key" = "ctrl+alt+v";
+          "command" = "toggleVim";
+          # by the way, with vim on, ctrl+i and ctrl+o navigate your jump history
+        }
+      ];
 
       extensions = with pkgs.open-vsx-release; [
         ms-python.python
@@ -168,7 +194,7 @@
     TinyDuration=20
     TinyEnabled=true
     TinyInterval=20
-    TinyThreshold=120
+    TinyThreshold=300
     UseNoIdleTimer=false
     UsePlasmaReadOnly=true
 

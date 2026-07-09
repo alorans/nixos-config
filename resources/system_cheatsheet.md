@@ -36,3 +36,10 @@ systemd-inhibit --what=handle-lid-switch sleep infinity
     - `git commit --amend`: Amend the previous commit.
     - `git log`: List commit hashes and messages.
     - `git blame`: See the commits at which different lines of a file were touched. This is sometimes automatically integrated into code editors.
+
+- Systemd
+    - `systemctl list-units` = list all available units and targets that you can use in systemd services.
+    - `man systemd.service` and `man systemd.unit` show many options.
+
+- Hardware
+    - On Lenovo laptops, you can toggle the key backlight by pressing `Fn` + `Space`.

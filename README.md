@@ -1,5 +1,3 @@
-My personal NixOS config.
-
 ## Resources
 
 - [Installing from Minimal USB](./resources/installing_from_minimal_usb.md)

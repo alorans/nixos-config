@@ -164,6 +164,32 @@
       PermitRootLogin = "no";
     };
   };
+
+  systemd.services.night-shutdown = {
+    description = "Automatically shutdown after 12 AM and before 5 AM";
+    after = [ "time-sync.target" ];
+    wants = [ "time-sync.target" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig.ExecStart = "${pkgs.writeScript "night-shutdown" ''
+      #!${pkgs.python3}/bin/python3
+      import time
+      import subprocess
+
+      def waitUntilNight(start_hour: int, end_hour: int):
+          localtime = time.localtime()
+          if localtime.tm_hour < end_hour or localtime.tm_hour >= start_hour:
+              return
+          else:
+              remaining_secs = (start_hour * 60 * 60) - (localtime.tm_hour * 60 * 60) - (localtime.tm_min * 60) - localtime.tm_sec
+              time.sleep(remaining_secs)
+              return
+
+      if __name__ == "__main__":
+          waitUntilNight(24, 5)
+          subprocess.run(["${pkgs.systemd}/bin/shutdown", "now"])
+    ''}";
+  };
+
   # networking.firewall.allowedTCPPorts = [ 22 ];
 
   # This option defines the first version of NixOS you have installed on this particular machine,
