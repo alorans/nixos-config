@@ -63,8 +63,8 @@
             src = final.fetchFromGitHub {
               owner = "alorans";
               repo = "rsibreak_xwayland";
-              rev = "6200e975865f8e276848ec3e7596b422cdda748f"; # copy the most recent commit hash
-              hash = "sha256-yuVGrTlDd2YxXvsks8httNie5v/t6D0KZoCeC69gap8="; # nix will tell you what to put if you leave it blank
+              rev = "442b14c5d38a8cc6692d6f852cbf3067722a71a7"; # copy the most recent commit hash
+              hash = "sha256-rg4d/Vg98dOyFSexKoanTpaByiQS8ZaDeoMHaPi/WBc="; # nix will tell you what to put if you leave it blank
             };
 
             # wayland build inputs

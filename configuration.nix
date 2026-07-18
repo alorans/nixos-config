@@ -97,8 +97,23 @@
           updates_disabled  = true;
         };
 
+        # noscript
         "{73a6fe31-595d-460b-a920-fcc0f8843232}" = {
           install_url       = moz "noscript";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # tree style tab
+        "treestyletab@piro.sakura.ne.jp" = {
+          install_url       = moz "tree-style-tab";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # unhook ng
+        "@unhookng" = {
+          install_url       = moz "unhook-ng";
           installation_mode = "force_installed";
           updates_disabled  = true;
         };
@@ -121,16 +136,23 @@
   };
 
   # magical shim that lets dynamically linked elfs run on nixos
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    # Add commonly needed libraries for unpatched binaries here
-    # you can use ldd to get the needed libraries (or readelf if you can't risk the elf running)
-    stdenv.cc.cc
-    zlib
-    glib
-    libX11
-    ncurses
-  ];
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      # Add commonly needed libraries for unpatched binaries here
+      # you can use ldd to get the needed libraries (or readelf if you can't risk the elf running)
+      # nix-shell -p patchelf is also very useful to add rpath/runpath directories to a binary
+      # LD_LIBRARY_PATH in the environment also contains dynamic library directories
+      # runpaths to an unprotected directory can be a security risk
+      stdenv.cc.cc
+      stdenv.cc.cc.lib
+      llvmPackages_22.libcxx
+      zlib
+      glib
+      libX11
+      ncurses
+    ];
+  };
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
@@ -165,30 +187,30 @@
     };
   };
 
-  systemd.services.night-shutdown = {
-    description = "Automatically shutdown after 12 AM and before 5 AM";
-    after = [ "time-sync.target" ];
-    wants = [ "time-sync.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig.ExecStart = "${pkgs.writeScript "night-shutdown" ''
-      #!${pkgs.python3}/bin/python3
-      import time
-      import subprocess
+  # systemd.services.night-shutdown = {
+  #   description = "Automatically shutdown after 12 AM and before 5 AM";
+  #   after = [ "time-sync.target" ];
+  #   wants = [ "time-sync.target" ];
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig.ExecStart = "${pkgs.writeScript "night-shutdown" ''
+  #     #!${pkgs.python3}/bin/python3
+  #     import time
+  #     import subprocess
 
-      def waitUntilNight(start_hour: int, end_hour: int):
-          localtime = time.localtime()
-          if localtime.tm_hour < end_hour or localtime.tm_hour >= start_hour:
-              return
-          else:
-              remaining_secs = (start_hour * 60 * 60) - (localtime.tm_hour * 60 * 60) - (localtime.tm_min * 60) - localtime.tm_sec
-              time.sleep(remaining_secs)
-              return
+  #     def waitUntilNight(start_hour: int, end_hour: int):
+  #         localtime = time.localtime()
+  #         if localtime.tm_hour < end_hour or localtime.tm_hour >= start_hour:
+  #             return
+  #         else:
+  #             remaining_secs = (start_hour * 60 * 60) - (localtime.tm_hour * 60 * 60) - (localtime.tm_min * 60) - localtime.tm_sec
+  #             time.sleep(remaining_secs)
+  #             return
 
-      if __name__ == "__main__":
-          waitUntilNight(24, 5)
-          subprocess.run(["${pkgs.systemd}/bin/shutdown", "now"])
-    ''}";
-  };
+  #     if __name__ == "__main__":
+  #         waitUntilNight(24, 5)
+  #         subprocess.run(["${pkgs.systemd}/bin/shutdown", "now"])
+  #   ''}";
+  # };
 
   # networking.firewall.allowedTCPPorts = [ 22 ];
 

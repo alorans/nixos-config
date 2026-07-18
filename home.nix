@@ -28,6 +28,7 @@
     ffmpeg
     cloc
     nushell
+    tor-browser
 
     # gui
     vlc
@@ -89,6 +90,14 @@
           eval "$(${pkgs.direnv}/bin/direnv export bash 2> >(egrep -v -e '^....direnv: export' >&2))"
         };
       '';
+    };
+    # this makes it so pressing up arrow shows commands in your history that start with whatever you've typed already
+    readline = {
+      enable = true;
+      bindings = {
+        "\\e[A" = "history-search-backward";
+        "\\e[B" = "history-search-forward";
+      };
     };
   };
 
@@ -213,6 +222,8 @@
     Name=RSIBreak
     Exec=${pkgs.rsibreak}/bin/rsibreak
   '';
+
+  
 
   # KDE plasma settings
   programs.plasma = {

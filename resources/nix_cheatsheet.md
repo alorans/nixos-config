@@ -30,8 +30,19 @@
     - Install it alongside `direnv` and it automatically loads a devShell upon entering its directory.
     - Do `echo "use flake" >> .envrc && direnv allow` in the directory.
 
+- Building local projects
+    - `nix build .#target` builds a given target in a Nix project and symlinks `./result` (to the derivation output in the Nix store) in the working directory.
+    - `(pkgs.callPackage /path/to/local/package.nix/or/default.nix {})` to load a local nix package. You may need to pass `--impure` if the path is global.
+
+- Contributing to nixpkgs
+    - You run the build commands from the top-level `nixpkgs` directory.
+    - Generally, the original (non-nix-command) commands are better, because nixpkgs aren't required to have a flake.
+    - `nix-build -A packageName` = build a package (this also outputs a `./result` symlink).
+    - `--check` = run the test suite on that package.
+
 - Templates
     - Flake devShell
+        - TODO: improve with flake-parts
 ```nix
 {
   description = "my devShell";

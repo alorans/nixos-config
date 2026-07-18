@@ -1,15 +1,9 @@
 # System Cheatsheet
 
-- Switch to kernel TTY
-    - `Ctrl` + `Fn` + `Alt` + `F[1-6]`
-
-- Close laptop lid without computer going to sleep
-```sh
-systemd-inhibit --what=handle-lid-switch sleep infinity
-```
-
 - KDE
     - Use `Alt` + `Space` to open KRunner.
+    - Hold `Shift` while pressing the volume keys to adjust in increments of 1% as opposed to 5%.
+    - `Ctrl` + `Meta` + arrow keys:
     - How I generally organize my desktops
         1. VSCodium (+ terminal windows)
         2. Firefox
@@ -20,10 +14,10 @@ systemd-inhibit --what=handle-lid-switch sleep infinity
         - *Hide from screencast*
         - *Move to Desktop* = sometimes quicker or more precise than clicking and dragging in the application bar desktops widget
 
-- Hardware details
-    - CPU: `lscpu`
-    - RAM: `free -h`
-    - Storgae: `df -h`
+- Kernel
+    - TTY
+        - `Ctrl` + `Alt` + `F[1-6]`, `sudo chvt [1-6]`: switch virtual console.
+        
 
 - Clipboard
     - `Ctrl` + `C` = regular apps, e.g. browser.
@@ -36,10 +30,29 @@ systemd-inhibit --what=handle-lid-switch sleep infinity
     - `git commit --amend`: Amend the previous commit.
     - `git log`: List commit hashes and messages.
     - `git blame`: See the commits at which different lines of a file were touched. This is sometimes automatically integrated into code editors.
+    - `git diff HEAD`: See differences between the current state of the code and the last commit.
+        - `--shortstat`: only print files changed, line insertions, and line deletions.
+    - `git rebase -i`: Interactive rebase
+        - This is kinda complicated and has a lot of internal commands in the repl.
+        - I primarily use it to squash commits. See [this section of the git book](https://git-scm.com/book/en/v2/Git-Tools-Rewriting-History#_squashing).
 
 - Systemd
     - `systemctl list-units` = list all available units and targets that you can use in systemd services.
     - `man systemd.service` and `man systemd.unit` show many options.
 
 - Hardware
-    - On Lenovo laptops, you can toggle the key backlight by pressing `Fn` + `Space`.
+    - `Fn` + `Space`: toggle the key backlight (Lenovo laptops).
+    - `systemd-inhibit --what=handle-lid-switch sleep infinity`: close laptop lid without computer going to sleep
+    - Get details
+        - CPU: `lscpu`
+        - RAM: `free -h`
+        - Storage: `df -h`
+
+- yt-dlp
+    - `yt-dlp -f "bestvideo[height<=1080]+bestaudio/best[height<=1080]" --merge-output-format mp4 "VIDEO_URL"`: This is generally how you want to do it.
+
+- direnv
+    - `direnv allow`, `direnv disallow`: allow and disallow a .envrc file from executing.
+    - `direnv prune`: prune .envrc files that no longer exist from the allow list.
+
+- `xdg-open` on Linux is the same as `open` on Mac, that is, it opens a file in the default application.
