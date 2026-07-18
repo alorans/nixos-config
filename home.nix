@@ -71,6 +71,104 @@
     };
   };
 
+  # https://hugosum.com/blog/customizing-firefox-with-nix-and-home-manager
+  programs.firefox = {
+    enable = true;
+
+    # KDE Plasma integration
+    nativeMessagingHosts = [ pkgs.kdePackages.plasma-browser-integration ];
+    configPath = ".mozilla/firefox";
+
+    profiles."default" = {
+      id = 0;
+      name = "default";
+      isDefault = true;
+
+      settings = {
+        "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+        "widget.use-xdg-desktop-portal.file-picker" = 1;
+        "sidebar.revamp" = false;
+        "browser.toolbars.bookmarks.visibility" = "never";
+        "browser.newtabpage.enabled" = false;
+        "browser.startup.homepage" = "chrome://browser/content/blanktab.html";
+        "extensions.pocket.enabled" = false;
+        "browser.toolbarbuttons.introduced.pocket-button" = false;
+        "browser.warnOnQuit" = false;
+        # login should be handled by bitwarden (or something else)
+        "signon.rememberSignons" = false;
+        "signon.autofillForms" = false;
+        "signon.generation.enabled" = false;
+        "browser.formfill.enable" = false;
+      };
+
+      # Hide horizontal tabs ui
+      # Hide all sidebar titles
+      userChrome = ''
+        #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar > .toolbar-items { opacity: 0; pointer-events: none; }
+        #main-window:not([tabsintitlebar="true"]) #TabsToolbar { visibility: collapse !important; }
+        #main-window[tabsintitlebar="true"]:not([extradragspace="true"]) #TabsToolbar .titlebar-spacer { border-inline-end: none; }
+        #sidebar-header { display: none; }
+      '';
+    };
+
+    # Enable BetterFox
+    betterfox = {
+      enable = true;
+      profiles."default" = {
+        enableAllSections = true;
+      };
+    };
+
+    # Extensions
+    policies = {
+      ExtensionSettings = let
+        moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
+      in {
+        # "*".installation_mode = "blocked";
+        # turn on if you want to block the installation of extra extensions
+
+        "uBlock0@raymondhill.net" = {
+          default_area      = "navbar";
+          install_url       = moz "ublock-origin";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # noscript
+        "{73a6fe31-595d-460b-a920-fcc0f8843232}" = {
+          default_area      = "navbar";
+          install_url       = moz "noscript";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # KDE Plasma integration
+        "plasma-browser-integration@kde.org" = {
+          install_url       = moz "plasma-integration";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # tree style tab
+        # TODO: use an overlay or something to add TST config CSS for firefox colors, light mode, and keybindings
+        # TODO: also I heard that some of these can be installed from the NUR. Look into that.
+        "treestyletab@piro.sakura.ne.jp" = {
+          install_url       = moz "tree-style-tab";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+
+        # unhook ng
+        "@unhookng" = {
+          install_url       = moz "unhook-ng";
+          installation_mode = "force_installed";
+          updates_disabled  = true;
+        };
+      };
+    };
+  };
+
+
   # install direnv + nix-direnv
   # to integrate with an existing flake.nix: echo "use flake" >> .envrc && direnv allow
   programs = {
@@ -222,8 +320,6 @@
     Name=RSIBreak
     Exec=${pkgs.rsibreak}/bin/rsibreak
   '';
-
-  
 
   # KDE plasma settings
   programs.plasma = {

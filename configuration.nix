@@ -69,64 +69,6 @@
     extraGroups = [ "wheel" "networkManager" ];
   };
 
-  # although this could be configured via profiles in home-manager,
-  # this will install extensions and config on all profiles
-  programs.firefox = {
-    enable = true;
-
-    policies = {
-      OfferToSaveLogins = false;
-
-      # Extensions
-      ExtensionSettings = let
-        moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
-      in {
-        # "*".installation_mode = "blocked";
-        # turn on if you want to block the installation of extra extensions
-
-        "uBlock0@raymondhill.net" = {
-          install_url       = moz "ublock-origin";
-          installation_mode = "force_installed";
-          updates_disabled  = true;
-        };
-
-        # KDE Plasma integration
-        "plasma-browser-integration@kde.org" = {
-          install_url       = moz "plasma-integration";
-          installation_mode = "force_installed";
-          updates_disabled  = true;
-        };
-
-        # noscript
-        "{73a6fe31-595d-460b-a920-fcc0f8843232}" = {
-          install_url       = moz "noscript";
-          installation_mode = "force_installed";
-          updates_disabled  = true;
-        };
-
-        # tree style tab
-        "treestyletab@piro.sakura.ne.jp" = {
-          install_url       = moz "tree-style-tab";
-          installation_mode = "force_installed";
-          updates_disabled  = true;
-        };
-
-        # unhook ng
-        "@unhookng" = {
-          install_url       = moz "unhook-ng";
-          installation_mode = "force_installed";
-          updates_disabled  = true;
-        };
-      };
-    };
-
-    # KDE Plasma integration
-    nativeMessagingHosts.packages = [ pkgs.kdePackages.plasma-browser-integration ];
-    preferences = {
-      "widget.use-xdg-desktop-portal.file-picker" = 1;
-    };
-  };
-
   # Steam needs to be installed globally
   programs.steam = {
     enable = true;

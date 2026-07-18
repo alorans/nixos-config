@@ -33,6 +33,7 @@
 - Building local projects
     - `nix build .#target` builds a given target in a Nix project and symlinks `./result` (to the derivation output in the Nix store) in the working directory.
     - `(pkgs.callPackage /path/to/local/package.nix/or/default.nix {})` to load a local nix package. You may need to pass `--impure` if the path is global.
+    - Nix can interpret paths, so if you have (for example) a source code directory that is fetched from GitHub, you can replace that with a local development version by simply typing in the path to the directory in place of the `fetchFromGitHub` call (then evaluating with `--impure`).
 
 - Contributing to nixpkgs
     - You run the build commands from the top-level `nixpkgs` directory.

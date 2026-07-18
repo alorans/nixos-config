@@ -13,7 +13,13 @@
 
     plasma-manager = {
       url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
       inputs.home-manager.follows = "home-manager";
+    };
+
+    betterfox = {
+      url = "github:HeitorAugustoLN/betterfox-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
   };
 
@@ -25,6 +31,7 @@
       nix-vscode-extensions,
       home-manager,
       plasma-manager,
+      betterfox,
       ...
     }:
     let
@@ -95,7 +102,10 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.sharedModules = [ plasma-manager.homeModules.plasma-manager ];
+            home-manager.sharedModules = [
+              plasma-manager.homeModules.plasma-manager
+              betterfox.homeModules.betterfox
+            ];
             home-manager.users.alorans = import ./home.nix;
             home-manager.backupFileExtension = "hm-bak";
           }
