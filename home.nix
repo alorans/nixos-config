@@ -85,16 +85,26 @@
       isDefault = true;
 
       settings = {
+        # use userChrome.css
         "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
+        # KDE integration
         "widget.use-xdg-desktop-portal.file-picker" = 1;
+        # hide new sidebar and bookmarks bar
         "sidebar.revamp" = false;
         "browser.toolbars.bookmarks.visibility" = "never";
+        # new tab and new window are blank
         "browser.newtabpage.enabled" = false;
         "browser.startup.homepage" = "chrome://browser/content/blanktab.html";
+        # disable firefox pocket
         "extensions.pocket.enabled" = false;
         "browser.toolbarbuttons.introduced.pocket-button" = false;
+        # disable firefox accounts
+        "identity.fxaccounts.enabled" = false;
+        # don't warn on quit
         "browser.warnOnQuit" = false;
-        # login should be handled by bitwarden (or something else)
+        # restore previous session on startup
+        "browser.startup.page" = 3;
+        # login should be handled by a proper password manager
         "signon.rememberSignons" = false;
         "signon.autofillForms" = false;
         "signon.generation.enabled" = false;
@@ -263,7 +273,7 @@
   programs.vim = {
     enable = true;
     plugins = [
-      pkgs.vimPlugins.surround
+      pkgs.vimPlugins.vim-surround
     ];
     extraConfig = ''
       set tabstop=4

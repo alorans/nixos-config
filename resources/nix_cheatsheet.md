@@ -56,6 +56,12 @@
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
+      # If you need configuration, you can do something like this
+      # pkgs = import nixpkgs {
+      #   inherit system;
+      #   config.allowUnfree = true;
+      #   overlays = [ (import ./my-overlay.nix) ];
+      # };
     in
     {
       devShells.${system}.default = pkgs.mkShell {
