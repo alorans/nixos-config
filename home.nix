@@ -262,6 +262,9 @@
   # this enables custom config and also system clipboard integration
   programs.vim = {
     enable = true;
+    plugins = [
+      pkgs.vimPlugins.surround
+    ];
     extraConfig = ''
       set tabstop=4
       set shiftwidth=4
