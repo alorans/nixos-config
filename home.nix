@@ -28,13 +28,14 @@
     ffmpeg
     cloc
     nushell
-    tor-browser
+    monero-cli
 
     # gui
     vlc
-    monero-cli
+    tor-browser
     qbittorrent
     rsibreak
+    signal-desktop
     (ghidra.withExtensions (p: with p; [
       wasm
     ]))

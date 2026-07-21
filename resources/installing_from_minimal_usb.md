@@ -1,13 +1,15 @@
-# Intro
+## Intro
 - NixOS is an interesting Linux distro because it intentionally diverges from the standard FSH (Filesystem Hierarchy) for Linux.
 - Additionally, it's focus on declarative management of system resources means that guides written for installing Arch, Gentoo, or similar minimal distros do not work on NixOS.
-# Downloading & Booting
+
+## Downloading & Booting
 - Download the latest NixOS Minimal ISO (should be <2GB)
 	- The graphical installer is actually pretty good, so definitely use that (and discard the rest of this guide) if you're not familiar with the command line.
 - Flash it to a USB drive
 - Shut down your computer fully and reboot into the BIOS/temp boot settings
 - Boot into the USB HDD drive
-# Networking
+
+## Networking
 ```sh
 sudo systemctl start wpa_supplicant
 wpa_cli
@@ -18,7 +20,8 @@ wpa_cli
 > quit
 ping gnu.org  # testing
 ```
-# Helpful Programs
+
+## Helpful Programs
 ```sh
 nix-shell -p git vim tmux tree acpi brightnessctl
 ```
@@ -26,7 +29,8 @@ nix-shell -p git vim tmux tree acpi brightnessctl
 - `brightnessctl` = change screen brightness
 - I typically boot into the nix-shell above, then `tmux`, and finally `sudo -i` for convenience in the installation.
 - If you don't do `sudo -i`, most of the following commands will have to be run with `sudo`.
-# Partition Disk
+
+## Partition Disk
 - **CHECK YOUR DISKS IN `/dev`!**
 	- Typically, hard drives are at `/dev/sdX`
 		- E.g. `/dev/sda`
@@ -58,7 +62,8 @@ gdisk /dev/nvme0n1
 > y
 ```
 - NOTE: swap is great, but it can wear down SSDs over time, so be mindful of that.
-# Make Filesystems
+
+## Make Filesystems
 - Make a FAT32 filesystem with the label ESP (EFI System Partition) on partition number 1.
 ```sh
 mkfs.fat -F 32 -n ESP /dev/nvme0n1p1  # -I to force
@@ -72,7 +77,8 @@ mkfs.ext4 -L NIXOS /dev/nvme0n1p2  # -f to force
 mkswap -L SWAP /dev/nvme0n1p3  # -f to force
 ```
 - NOTE: the labels (ESP, NIXOS, SWAP) are linked under /dev/disk/by-label/
-# Mount Filesystems
+
+## Mount Filesystems
 - Mount the main filesystem.
 ```sh
 mount /mnt -L NIXOS
@@ -96,7 +102,8 @@ swapon -L SWAP
 - Run `swapon --show` to verify the swap drive.
 - Run `swapoff` to disable the partition for swapping.
 	- E.g. `swapoff -L SWAP`
-# Make Your Configuration
+
+## Make Your Configuration
 - Generate `hardware-configuration.nix` and template `configuration.nix`.
 ```sh
 nixos-generate-config --root /mnt

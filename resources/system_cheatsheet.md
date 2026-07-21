@@ -71,8 +71,11 @@
             - Prepend `shift` to the previous command to rearrange windows.
 
 - Systemd
-    - `systemctl list-units` = list all available units and targets that you can use in systemd services.
+    - `systemctl list-units`: list all available units and targets that you can use in systemd services.
     - `man systemd.service` and `man systemd.unit` show many options.
+    - `systemd-inhibit --what=sleep:idle:handle-lid-switch <command>` stops the computer from sleeping, idling, or shutting off when the laptop lid closes for the duration of a given command.
+        - If you substitute something like `sleep infinity` for the command, it does those things forever.
+        - You can add any number of colon-delimited options.
 
 - Hardware
     - `Fn` + `Space`: toggle the key backlight (Lenovo laptops).
